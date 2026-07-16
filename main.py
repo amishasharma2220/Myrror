@@ -15,3 +15,7 @@ class WardrobeItem(BaseModel):
 @app.post("/wardrobe")
 def add_wardrobe_item(item: WardrobeItem):
     return {"message": "Item received", "item": item}
+
+@app.get("/wardrobe")
+def get_wardrobe_items():
+    return {"items": []}
