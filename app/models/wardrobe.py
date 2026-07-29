@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 
 from app.database.connection import Base
 
@@ -10,3 +10,4 @@ class WardrobeItemModel(Base):
     name = Column(String, nullable=False)
     category = Column(String, nullable=False)
     color = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
