@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #f2ece4;
+  --color-charcoal: #1a1a1a;
+  --color-terracotta: #b5654a;
+  --color-muted: #7a7670;
+
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+}
