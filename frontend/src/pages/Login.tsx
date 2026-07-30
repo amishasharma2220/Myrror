@@ -1,13 +1,17 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import { login } from '../api/auth'
+import { login as loginRequest } from '../api/auth'
+import { useAuth } from '../context/AuthContext'
 
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const { login } = useAuth()
+  const navigate = useNavigate()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -15,8 +19,9 @@ function Login() {
     setLoading(true)
 
     try {
-      const data = await login(email, password)
-      console.log('Login successful, token:', data.access_token)
+      const data = await loginRequest(email, password)
+      login(data.access_token)
+      navigate('/wardrobe')
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message)
@@ -25,6 +30,7 @@ function Login() {
       setLoading(false)
     }
   }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cream px-4">
