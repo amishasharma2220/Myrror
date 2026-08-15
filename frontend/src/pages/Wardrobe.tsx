@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getWardrobeItems } from '../api/wardrobe'
+import { getWardrobeItems, addWardrobeItem } from '../api/wardrobe'
 import type { WardrobeItem } from '../api/wardrobe'
 import { useAuth } from '../context/AuthContext'
 
@@ -9,14 +9,35 @@ function Wardrobe() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [name, setName] = useState('')
+  const [category, setCategory] = useState('')
+  const [color, setColor] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
   useEffect(() => {
     if (!token) return
-
     getWardrobeItems(token)
       .then((data) => setItems(data))
       .catch(() => setError('Could not load your wardrobe.'))
       .finally(() => setLoading(false))
   }, [token])
+
+  async function handleAddItem(e: React.FormEvent) {
+    e.preventDefault()
+    if (!token) return
+    setSubmitting(true)
+    try {
+      const newItem = await addWardrobeItem(token, { name, category, color })
+      setItems((prev) => [...prev, newItem])
+      setName('')
+      setCategory('')
+      setColor('')
+    } catch {
+      setError('Could not add item. Try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-cream px-8 py-10">
@@ -36,8 +57,50 @@ function Wardrobe() {
         strikes.
       </p>
 
-      {loading && <p className="text-muted">Loading your wardrobe...</p>}
+      <form
+        onSubmit={handleAddItem}
+        className="flex flex-wrap gap-3 mb-10 items-end"
+      >
+        <div className="flex flex-col gap-1">
+          <label className="text-xs uppercase tracking-widest text-muted">Name</label>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="border border-charcoal/20 rounded-lg px-3 py-2 text-sm"
+            placeholder="Blue Shirt"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs uppercase tracking-widest text-muted">Category</label>
+          <input
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+            className="border border-charcoal/20 rounded-lg px-3 py-2 text-sm"
+            placeholder="Shirt"
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs uppercase tracking-widest text-muted">Color</label>
+          <input
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            required
+            className="border border-charcoal/20 rounded-lg px-3 py-2 text-sm"
+            placeholder="Blue"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="bg-charcoal text-cream px-4 py-2 rounded-lg text-sm"
+        >
+          {submitting ? 'Adding...' : 'Add item'}
+        </button>
+      </form>
 
+      {loading && <p className="text-muted">Loading your wardrobe...</p>}
       {error && <p className="text-terracotta">{error}</p>}
 
       {!loading && !error && items.length === 0 && (

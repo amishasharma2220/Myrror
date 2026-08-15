@@ -14,9 +14,27 @@ export async function getWardrobeItems(token: string): Promise<WardrobeItem[]> {
       Authorization: `Bearer ${token}`,
     },
   })
-
   if (!response.ok) {
     throw new Error('Failed to fetch wardrobe items')
+  }
+  return response.json()
+}
+
+export async function addWardrobeItem(
+  token: string,
+  item: { name: string; category: string; color: string }
+): Promise<WardrobeItem> {
+  const response = await fetch(`${API_BASE_URL}/wardrobe`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(item),
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to add wardrobe item')
   }
 
   return response.json()
