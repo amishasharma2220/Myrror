@@ -21,3 +21,30 @@ export async function login(email: string, password: string): Promise<LoginRespo
 
   return response.json()
 }
+
+interface SignupResponse {
+  id: number
+  username: string
+  email: string
+}
+
+export async function signup(
+  username: string,
+  email: string,
+  password: string
+): Promise<SignupResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, email, password }),
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.detail || 'Signup failed')
+  }
+
+  return response.json()
+}

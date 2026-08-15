@@ -74,9 +74,9 @@ function Login() {
 
         <p className="text-center text-sm text-muted">
           New to Myrror?{' '}
-          <a href="#" className="text-charcoal underline">
-            Create an account
-          </a>
+          <a href="/register" className="text-charcoal underline">
+  Create an account
+</a>
         </p>
       </form>
     </div>
@@ -84,3 +84,30 @@ function Login() {
 }
 
 export default Login
+
+interface SignupResponse {
+  id: number
+  username: string
+  email: string
+}
+
+export async function signup(
+  username: string,
+  email: string,
+  password: string
+): Promise<SignupResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ username, email, password }),
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json()
+    throw new Error(errorData.detail || 'Signup failed')
+  }
+
+  return response.json()
+}
