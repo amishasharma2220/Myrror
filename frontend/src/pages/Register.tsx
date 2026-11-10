@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Input from '../components/Input'
-import Button from '../components/Button'
+import { Link, useNavigate } from 'react-router-dom'
+import AuthLayout, { AuthError, AuthField, AuthSubmit } from '../components/AuthLayout'
 import { signup } from '../api/auth'
 
 function Register() {
@@ -19,10 +18,11 @@ function Register() {
 
     try {
       await signup(username, email, password)
-      navigate('/login')
+      // hand the email to the login page so it's pre-filled
+      navigate('/login', { state: { email } })
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message)
+        setError(err instanceof TypeError ? "Can't reach the server. Is FastAPI running on port 8001?" : err.message)
       }
     } finally {
       setLoading(false)
@@ -30,59 +30,28 @@ function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm flex flex-col gap-6"
-      >
-        <div className="text-center mb-2">
-          <p className="text-xs tracking-widest uppercase text-muted mb-2">
-            MYRROR
-          </p>
-          <h1 className="font-serif text-3xl text-charcoal">
-            Create your account
-          </h1>
-        </div>
+    <AuthLayout
+      eyebrow="Join Myrror"
+      title={<>Meet your <em className="text-terracotta">mirror.</em></>}
+      subtitle="Create an account to save your wardrobe and try it on."
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <AuthField id="username" label="Username" value={username} onChange={setUsername} placeholder="yourname" autoComplete="username" />
+        <AuthField id="email" label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" autoComplete="email" />
+        <AuthField id="password" label="Password" type="password" value={password} onChange={setPassword} autoComplete="new-password" />
 
-        <Input
-          label="Username"
-          type="text"
-          value={username}
-          onChange={setUsername}
-          placeholder="yourname"
-        />
+        <AuthError message={error} />
 
-        <Input
-          label="Email"
-          type="email"
-          value={email}
-          onChange={setEmail}
-          placeholder="you@example.com"
-        />
-
-        <Input
-          label="Password"
-          type="password"
-          value={password}
-          onChange={setPassword}
-        />
-
-        {error && (
-          <p className="text-sm text-terracotta text-center">{error}</p>
-        )}
-
-        <Button type="submit">
-          {loading ? 'Creating account...' : 'Create account'}
-        </Button>
+        <AuthSubmit loading={loading}>{loading ? 'Creating account…' : 'Create account →'}</AuthSubmit>
 
         <p className="text-center text-sm text-muted">
           Already have an account?{' '}
-          <a href="/login" className="text-charcoal underline">
+          <Link to="/login" className="text-charcoal underline underline-offset-4 hover:text-terracotta">
             Sign in
-          </a>
+          </Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   )
 }
 

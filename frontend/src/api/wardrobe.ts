@@ -39,3 +39,16 @@ export async function addWardrobeItem(
 
   return response.json()
 }
+
+export async function deleteWardrobeItem(token: string, id: number): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/wardrobe/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to delete wardrobe item')
+  }
+}
